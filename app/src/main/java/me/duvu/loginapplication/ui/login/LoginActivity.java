@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -23,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import me.duvu.loginapplication.MapsActivity;
+import me.duvu.loginapplication.PrefManager;
 import me.duvu.loginapplication.R;
 import me.duvu.loginapplication.data.model.LoggedInUser;
 import me.duvu.loginapplication.ui.login.LoginViewModel;
@@ -31,6 +34,7 @@ import me.duvu.loginapplication.ui.login.LoginViewModelFactory;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    private PrefManager prefManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,12 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginViewModel.getLoggedInUser().observe(this, new Observer<LoggedInUser>() {
-            @Override
-            public void onChanged(LoggedInUser loggedInUser) {
-                Log.i(">_", "LoggedInUser ...");
-            }
-        });
+        loginViewModel.getLoggedInUser().observe(this, loggedInUser -> Log.i(">_", "LoggedInUser ..."));
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -127,9 +126,14 @@ public class LoginActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());
             }
         });
+
+        prefManager = new PrefManager(this);
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
+        prefManager.setToken(model.getDisplayName());
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
         String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();

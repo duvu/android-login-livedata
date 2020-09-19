@@ -44,12 +44,9 @@ public class LoginViewModel extends ViewModel {
         // can be launched in a separate asynchronous job
         LiveData<LoggedInUser> result = loginRepository.login(username, password);
 
-        loggedInUser.addSource(result, new Observer<LoggedInUser>() {
-            @Override
-            public void onChanged(LoggedInUser loggedInUser) {
-                Log.i(">_", "Updated here! #" + loggedInUser.getAccountName());
-                loginResult.setValue(new LoginResult(new LoggedInUserView(loggedInUser.getAccountName())));
-            }
+        loggedInUser.addSource(result, loggedInUser -> {
+            Log.i(">_", "Updated here! #" + loggedInUser.getAccountName());
+            loginResult.setValue(new LoginResult(new LoggedInUserView(loggedInUser.getAccountName())));
         });
     }
 
